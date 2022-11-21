@@ -4,9 +4,6 @@ const scoreboardsRoutes = require("./api/routes/scoreboards");
 const scoreboardResultRoutes = require("./api/routes/scoreboardResult");
 
 const mongoose = require("mongoose");
-mongoose.connect(
-  "mongodb+srv://tasks-app:tasksapp999@cluster0.bmjtqzl.mongodb.net/test"
-);
 require("dotenv").config();
 
 const app = express();
