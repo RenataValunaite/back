@@ -35,14 +35,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.put("/editScoreboardName/:id", function (req, res) {
-//   const index = scoreboards.findIndex(
-//     (scoreboardName) => scoreboardName.id === req.params.id
-//   );
-//   scoreboards[2].scoreboardName = req.body.editedScoreboardName;
-//   return res
-//     .status(200)
-//     .json({ response: "Scoreboard was created successfully" });
-// });
+app.put("/editScoreboardName/:id", function (req, res) {
+  const index = scoreboards.findIndex(
+    (scoreboardName) => scoreboardName.id === req.params.id
+  );
+  scoreboards[2].scoreboardName = req.body.editedScoreboardName;
+  return res
+    .status(200)
+    .json({ response: "Scoreboard was created successfully" });
+});
 
 app.listen(3000);

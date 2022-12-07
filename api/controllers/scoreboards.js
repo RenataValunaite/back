@@ -5,7 +5,7 @@ module.exports.CREATE_SCOREBOARD = function (req, res) {
   const scoreboard = new ScoreboardsSchema({
     name: req.body.name,
     dateCreated: new Date(),
-    results_ids: [],
+    results_ids: new Number(),
     scoreDirection: req.body.scoreDirection,
   });
 
@@ -16,33 +16,51 @@ module.exports.CREATE_SCOREBOARD = function (req, res) {
   });
 };
 
-module.exports.EDIT_SCOREBOARD_NAME = (req, res) => {
+module.exports.EDIT_SCOREBOARD_NAME = function (req, res) {
   ScoreboardsSchema.updateOne(
     { _id: req.params.id },
-    { name: req.body.editedName }
+    { name: req.body.editedScoreboardName }
   ).then((result) => {
-    return res
-      .status(200)
-      .json({ statusMessage: "Eddited successfully", editedName: result });
+    return res.status(200).json({
+      statusMessage: "Eddited successfully",
+      editedScoreboardName: result,
+    });
   });
 };
 
 module.exports.EDIT_SCOREBOARD_DIRECTION = async function (req, res) {
-  const data = await ScoreboardsSchema.aggregate([
+  const direction = await ScoreboardsSchema.findOne({
+    _id: req.params.id,
+  }).exec();
+
+  // return res.status(200).json({ direction: direction });
+
+  function editScoreboardDirection(direction) {
+    switch (direction) {
+      case "DESC":
+        direction = "ASC";
+        break;
+      case "ASC":
+        direction = "DESC";
+    }
+    return direction;
+  }
+
+  ScoreboardsSchema.updateOne(
     {
-      $lookup: {
-        from: "results",
-        localField: "resultIds",
-        foreignField: "id",
-        as: "scoreboard_results",
-      },
+      _id: req.params.id,
     },
-    { $match: { _id: ObjectId(req.params.id) } },
-  ]).exec();
-
-  console.log(data);
-
-  return res.status(200).json({ scoreboards: data });
+    {
+      scoreboardDirection: editScoreboardDirection(
+        direction.scoreboardDirection
+      ),
+    }
+  ).then((result) => {
+    return res.status(200).json({
+      statusMessage: "Direction edited successfully",
+      scoreboardsDirection: result,
+    });
+  });
 };
 
 module.exports.GET_ALL_SCOREBOARDS = function (req, res) {
@@ -53,7 +71,7 @@ module.exports.GET_ALL_SCOREBOARDS = function (req, res) {
     });
 };
 
-module.exports.GET_SCOREBOARD = function (req, res) {
+module.exports.GET_SCOREBOARD_BY_ID = function (req, res) {
   ScoreboardsSchema.findOne({ _id: req.params.id }).then((results) => {
     return res.status(200).json({ scoreboards: results });
   });
